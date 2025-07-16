@@ -82,6 +82,7 @@ def main(argv=None):
 
     if preferences:
         print("Welcome to Friday Night Bytes!")
+        print(f"Preferences: {preferences}")
 
         if "nba_team" in preferences and "lal" in preferences["nba_team"]:
             print("\nBleed purple and gold 💜💛! Laker Nation, stand up!")

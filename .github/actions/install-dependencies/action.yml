@@ -5,8 +5,8 @@ runs:
   using: composite
   steps:
     - run: |
-        python3 -m venv env
-        source env/bin/activate
+        python -m pip install --upgrade pip
+        pip install -r required_libraries.txt
+        pip install pytest
         pip install git+https://github.com/davidjkrause/sportsipy@master
-        pip3 install -r required_libraries.txt
       shell: bash
