@@ -28,8 +28,8 @@ Once you have followed the prerequisites and installed all the needed dependenci
 ```
 python3 -m venv env
 source env/bin/activate
-pip install git+https://github.com/davidjkrause/sportsipy@master
 pip3 install -r required_libraries.txt
+pip install git+https://github.com/davidjkrause/sportsipy@
 ```
 
 ## Running Program
