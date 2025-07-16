@@ -1,6 +1,6 @@
 from sportsipy.nba.teams import Teams
 from constants import SUPPORTED_LEAGUES
-from game_checker import daily_game_checker
+from gamechecker.game_checker import daily_game_checker
 import argparse
 
 def get_preferences(args=None):
@@ -82,7 +82,6 @@ def main(argv=None):
 
     if preferences:
         print("Welcome to Friday Night Bytes!")
-        print("Stored preferences:", preferences)
 
         if "nba_team" in preferences and "lal" in preferences["nba_team"]:
             print("\nBleed purple and gold 💜💛! Laker Nation, stand up!")
@@ -122,7 +121,6 @@ def main(argv=None):
             f"{league_key}_team": favorite_teams,
         }
         
-        print(f"Stored preferences: {preferences}")
         daily_game_checker(preferences)
         
     except KeyboardInterrupt:
