@@ -1,4 +1,4 @@
-from game_checker import display_games_today
+from gamechecker.game_checker import display_games_today
 from datetime import date
 import pytest
 
