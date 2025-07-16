@@ -1,0 +1,7 @@
+[tool.pytest.ini_options]
+markers = [
+    "unit: marks tests as unit tests",
+    "integration: marks tests as integration tests", 
+    "smoke: marks tests as smoke tests"
+]
+testpaths = ["tests"]
