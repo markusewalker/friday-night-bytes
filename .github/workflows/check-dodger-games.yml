@@ -1,0 +1,22 @@
+---
+name: Dodger Game Checker
+on:
+  schedule:
+    - cron: "0 12 * * *"
+  workflow_dispatch:
+
+jobs:
+  check-mlb-games:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check for Dodger games
+        uses: ./.github/actions/check-sports-games
+        with:
+          sport: "3"
+          teams: "lad"
+          off-season-start: "11-04"
+          reg-season-start: "03-18"
+          sport-name: "MLB"

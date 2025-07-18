@@ -1,0 +1,22 @@
+---
+name: Laker Game Checker
+on:
+  schedule:
+    - cron: "0 12 * * *"
+  workflow_dispatch:
+
+jobs:
+  check-laker-games:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check for Laker games
+        uses: ./.github/actions/check-sports-games
+        with:
+          sport: "1"
+          teams: "lal"
+          off-season-start: "07-01"
+          reg-season-start: "10-21"
+          sport-name: "NBA"
