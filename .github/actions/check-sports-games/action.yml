@@ -1,0 +1,122 @@
+---
+name: Check Sports Games
+description: "Check for games for specified teams with season awareness"
+inputs:
+  sport:
+    description: "Sport number (1=NBA, 2=NFL, 3=MLB)"
+    required: true
+  teams:
+    description: "Comma-separated team abbreviations"
+    required: true
+  off-season-start:
+    description: "Off-season start date (MM-DD format, e.g., 07-01)"
+    required: true
+  reg-season-start:
+    description: "Regular season start date (MM-DD format, e.g., 10-21)"
+    required: true
+  sport-name:
+    description: "Display name of the sport (e.g., NBA, NFL, MLB)"
+    required: true
+  python-version:
+    description: "Python version to use"
+    default: "3.13"
+
+outputs:
+  season-active:
+    description: "Checks to see if the sport season is currently active"
+    value: ${{ steps.season-check.outputs.season_active }}
+  games-found:
+    description: "Checks to see if any games were found"
+    value: ${{ steps.game-check.outputs.games_found }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Check if ${{ inputs.sport-name }} season is active
+      id: season-check
+      shell: bash
+      run: |
+        current_month=$(date +%m)
+        current_day=$(date +%d)
+        current_date=$(date +%m-%d)
+        
+        off_season_start="${{ inputs.off-season-start }}"
+        reg_season_start="${{ inputs.reg-season-start }}"
+        
+        echo "Current date: $current_date"
+        echo "Off-season period: $off_season_start to $reg_season_start"
+        
+        is_in_off_season() {
+          local current="$1"
+          local start="$2"
+          local end="$3"
+          
+          current_num=$(echo $current | tr -d '-')
+          start_num=$(echo $start | tr -d '-')
+          end_num=$(echo $end | tr -d '-')
+          
+          if [ $start_num -le $end_num ]; then
+            [ $current_num -ge $start_num ] && [ $current_num -le $end_num ]
+          else
+            [ $current_num -ge $start_num ] || [ $current_num -le $end_num ]
+          fi
+        }
+        
+        if is_in_off_season "$current_date" "$off_season_start" "$reg_season_start"; then
+          echo "${{ inputs.sport-name }} is currently in off-season ($off_season_start to $reg_season_start)"
+          echo "season_active=false" >> $GITHUB_OUTPUT
+        else
+          echo "${{ inputs.sport-name }} season is active!"
+          echo "season_active=true" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Set up Python
+      if: steps.season-check.outputs.season_active == 'true'
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python-version }}
+
+    - name: Install dependencies
+      if: steps.season-check.outputs.season_active == 'true'
+      uses: ./.github/actions/install-dependencies
+
+    - name: Check for ${{ inputs.sport-name }} games
+      id: game-check
+      if: steps.season-check.outputs.season_active == 'true'
+      shell: bash
+      run: |
+        echo "Checking for ${{ inputs.sport-name }} games for teams: ${{ inputs.teams }}"
+        
+        case "${{ inputs.sport }}" in
+          "1")
+            team_flag="--nba-teams"
+            ;;
+          "2")
+            team_flag="--nfl-teams"
+            ;;
+          "3")
+            team_flag="--mlb-teams"
+            ;;
+          *)
+            echo "Error: Unsupported sport number ${{ inputs.sport }}"
+            exit 1
+            ;;
+        esac
+        
+        output=$(python3 main.py --sport ${{ inputs.sport }} $team_flag ${{ inputs.teams }})
+        echo "$output"
+        
+        if echo "$output" | grep -q "✅ Game Found!"; then
+          echo "games_found=true" >> $GITHUB_OUTPUT
+          echo "🎉 Games found for ${{ inputs.sport-name }} teams!"
+        else
+          echo "games_found=false" >> $GITHUB_OUTPUT
+          echo "📅 No games found for ${{ inputs.sport-name }} teams today or tomorrow"
+        fi
+
+    - name: Skip workflow (off-season)
+      if: steps.season-check.outputs.season_active == 'false'
+      shell: bash
+      run: |
+        echo "⏸️ Skipping ${{ inputs.sport-name }} game check - currently in off-season"
+        echo "Off-season period: ${{ inputs.off-season-start }} to ${{ inputs.reg-season-start }}"
