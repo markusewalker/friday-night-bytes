@@ -5,6 +5,18 @@ from sportsipy.mlb.schedule import Schedule as MLBSchedule
 from constants import SUPPORTED_LEAGUES
 import time
 import requests
+import pytz
+import ssl
+import urllib3
+
+def get_current_date():
+    """Get the current date using Eastern timezone for consistency."""
+    eastern_tz = pytz.timezone('US/Eastern')
+    now_eastern = datetime.now(eastern_tz)
+    current_date = now_eastern.date()
+    
+    return current_date
+
 
 def get_team_name_from_abbreviation(abbreviation, league):
     """Get the full team name from abbreviation for a specific league."""
@@ -41,7 +53,7 @@ def get_date_description(target_date):
     Returns:
         str: Human-readable description ('today', 'tomorrow', or formatted date)
     """
-    today = date.today()
+    today = get_current_date()
     tomorrow = today + timedelta(days=1)
     
     if target_date == today:
@@ -87,7 +99,6 @@ def check_games(favorite_teams, league, target_date):
             # Put a sleep between requests to avoid rate limiting
             if i > 0:
                 time.sleep(5)
-                
             schedule = get_schedule_for_league(team_abbr, league)
             
             team_has_game = False
@@ -127,10 +138,17 @@ def check_games(favorite_teams, league, target_date):
             if "429" in str(e):
                 print(" ⚠️ Rate limit")
                 continue
+            elif "403" in str(e):
+                print(" 🚫 Blocked")
             else:
-                print(f" ❌ HTTP error")
+                print(f" ❌ HTTP error: {str(e)}")
+        except requests.exceptions.RequestException as e:
+            print(f" ❌ Network error: {str(e)}")
         except Exception as e:
-            print(f" ❌ Error")
+            if "403" in str(e) and "Forbidden" in str(e):
+                print(" 🚫 Blocked (403)")
+            else:
+                print(f" ❌ Error: {str(e)}")
             continue
     
     return games_found
@@ -147,7 +165,7 @@ def check_games_today(favorite_teams, league):
     Returns:
         list: List of dictionaries containing game information for today
     """
-    return check_games(favorite_teams, league, date.today())
+    return check_games(favorite_teams, league, get_current_date())
 
 
 def check_games_tomorrow(favorite_teams, league):
@@ -161,7 +179,7 @@ def check_games_tomorrow(favorite_teams, league):
     Returns:
         list: List of dictionaries containing game information for tomorrow
     """
-    tomorrow = date.today() + timedelta(days=1)
+    tomorrow = get_current_date() + timedelta(days=1)
     return check_games(favorite_teams, league, tomorrow)
 
 
@@ -214,7 +232,7 @@ def display_games_today(games_today):
     Args:
         games_today (list): List of game dictionaries
     """
-    display_games(games_today, date.today())
+    display_games(games_today, get_current_date())
 
       
 def display_games_tomorrow(games_tomorrow):
@@ -224,7 +242,7 @@ def display_games_tomorrow(games_tomorrow):
     Args:
         games_tomorrow (list): List of game dictionaries
     """
-    tomorrow = date.today() + timedelta(days=1)
+    tomorrow = get_current_date() + timedelta(days=1)
     display_games(games_tomorrow, tomorrow)
 
 
@@ -242,7 +260,7 @@ def parse_game_date(date_str, league):
     if not date_str:
         return None
     
-    current_year = date.today().year
+    current_year = get_current_date().year
     
     date_pattern = {
         'nba': '%a, %b %d, %Y',

@@ -1,7 +1,11 @@
 # Friday Night Bytes :basketball: :football: :baseball:
 "__X's and O's, with no syntax woes!__"
 
-Friday Night Bytes is one stop shop for the sports statistics enthusiast! Utilizing `sportsipy`, this project aims to provide statistics on your favorite team on a game by game basis.
+Friday Night Bytes is a **proof of concept** sports game checker that demonstrates automated data collection from sports websites. Utilizing `sportsipy`, this project showcases how to build a game-checking application with robust error handling and timezone management.
+
+**⚠️ CI/CD Limitations**: Sports data providers (like sports-reference.com) actively block automated requests from GitHub Actions and other CI environments. This is expected behavior and demonstrates real-world challenges in web scraping.
+
+**✅ Local Usage**: The application works locally, just not with Github Actions.
 
 _Leagues / Sports currently supported_
 - National Basketball Associaton (NBA) :basketball:
@@ -20,8 +24,6 @@ In order to properly run this, you will need the following installed on your cli
 - `python3`
 - `pip` || `pip3`
 - `venv`
-- Pushover app installed on your device
-- `ntfy` installed on Pushover
 
 ## Getting Started
 Once you have followed the prerequisites and installed all the needed dependencies, run the following commands:
@@ -30,7 +32,6 @@ Once you have followed the prerequisites and installed all the needed dependenci
 python3 -m venv env
 source env/bin/activate
 pip3 install -r required_libraries.txt
-pip3 install git+https://github.com/davidjkrause/sportsipy
 ```
 
 ## Running Program
@@ -62,4 +63,5 @@ options:
 
 ## 🚧 Coming soon 🚧
 - Support for Pushover app to work with Github Actions
-- Checking statistics for pre-game, live game and post-game for players/teams
+- Checking statistics for players/teams
+- GUI support

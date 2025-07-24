@@ -1,6 +1,6 @@
 from constants import SUPPORTED_LEAGUES
 from gamechecker.game_checker import game_checker
-import argparse
+import argparse, os
 
 def get_preferences(args=None):
     """ Get user preferences for favorite sport and favorite teams. """
