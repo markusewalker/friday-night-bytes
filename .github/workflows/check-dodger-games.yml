@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  check-mlb-games:
+  check-dodger-games:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
