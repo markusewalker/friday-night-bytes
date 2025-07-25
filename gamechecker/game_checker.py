@@ -215,10 +215,10 @@ def display_games(games_list, target_date):
             team = game['team']
             if game['is_home']:
                 matchup = f"{game['team']} vs {game['opponent']}"
-                venue = "🏠 Home"
+                venue = "🏠"
             else:
                 matchup = f"{game['team']} @ {game['opponent']}"
-                venue = "✈️  Away"
+                venue = "✈️"
             
             print(f"{team:<35} {matchup:<45} {venue}")
         
