@@ -1,5 +1,5 @@
 ---
-name: Run Unit Tests
+name: Run Tests
 on:
   push:
     branches:
@@ -23,6 +23,6 @@ jobs:
       - name: Install dependencies
         uses: ./.github/actions/install-dependencies
 
-      - name: Run unit tests
+      - name: Run tests
         run: |
-          pytest -m unit -s -v
+          pytest -m "unit or integration" -s -v

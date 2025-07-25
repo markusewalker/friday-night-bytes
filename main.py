@@ -1,5 +1,6 @@
 from constants import SUPPORTED_LEAGUES
 from gamechecker.game_checker import game_checker
+from gui.gui_app import main as gui_main
 import argparse, os
 
 def get_preferences(args=None):
@@ -82,7 +83,17 @@ def main(argv=None):
     parser.add_argument("--nba-teams", help="Comma-separated NBA team abbreviations (i.e. lal,bos,mia)")
     parser.add_argument("--nfl-teams", help="Comma-separated NFL team abbreviations (i.e. phi,kc,sf)")
     parser.add_argument("--mlb-teams", help="Comma-separated MLB team abbreviations (i.e. lad, nyy, bos)")
+    parser.add_argument("--gui", action="store_true", help="Launch the GUI version")
     args = parser.parse_args(argv)
+
+    if args.gui:
+        try:
+            gui_main()
+            return
+        except ImportError as e:
+            print(f"GUI mode is not available: {e}")
+            print("Please ensure tkinter and Pillow are installed.")
+            return
 
     using_cli = args.sport or args.nba_teams or args.nfl_teams or args.mlb_teams
     
