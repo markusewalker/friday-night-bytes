@@ -1,9 +1,12 @@
 ---
 name: Laker Game Checker
+
 on:
-  schedule:
-    - cron: "0 12 * * *"
   workflow_dispatch:
+
+env:
+  PUSHOVER_USER_KEY: ${{ secrets.PUSHOVER_USER_KEY }}
+  PUSHOVER_API_TOKEN: ${{ secrets.PUSHOVER_API_TOKEN }}
 
 jobs:
   check-laker-games:
@@ -11,6 +14,12 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Create .env file
+        uses: ./.github/actions/create-env-file
+        with:
+          user_key: ${{ env.PUSHOVER_USER_KEY }}
+          token: ${{ env.PUSHOVER_API_TOKEN }}
 
       - name: Check for Laker games
         uses: ./.github/actions/check-sports-games

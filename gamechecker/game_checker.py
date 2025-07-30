@@ -297,6 +297,28 @@ def parse_game_date(date_str, league):
                 continue
         
         return None
+    
+
+def build_games_summary(games, label):
+    """
+    Helper to build a summary string for a list of games.
+    """
+    lines = [label]
+
+    if games:
+        for game in games:
+            venue = "Home"
+
+            if game.get('is_home'):
+                venue = "🏠"
+            else:
+                venue = "✈️"
+
+            lines.append(f"🏆{game['team']} vs {game['opponent']} {venue}")
+    else:
+        lines.append(f"No games scheduled.")
+
+    return "\n".join(lines)
 
 
 def game_checker(preferences):
@@ -305,13 +327,17 @@ def game_checker(preferences):
     
     Args:
         preferences (dict): User preferences containing favorite teams and leagues
+
+    Returns:
+        str: Summary of games for today and tomorrow
     """
     if not preferences:
-        return
-    
+        return "No preferences provided."
+
     all_games_today = []
     all_games_tomorrow = []
-    
+    all_games_summary = []
+
     for league_key in SUPPORTED_LEAGUES.keys():
         team_key = f"{league_key}_team"
 
@@ -321,6 +347,12 @@ def game_checker(preferences):
             games_tomorrow = check_games_tomorrow(favorite_teams, league_key)
             all_games_today.extend(games_today)
             all_games_tomorrow.extend(games_tomorrow)
-    
+
     display_games_today(all_games_today)
     display_games_tomorrow(all_games_tomorrow)
+
+    all_games_summary.append(build_games_summary(all_games_today, "Today's Games:"))
+    all_games_summary.append("")
+    all_games_summary.append(build_games_summary(all_games_tomorrow, "Tomorrow's Games:"))
+
+    return "\n".join(all_games_summary)

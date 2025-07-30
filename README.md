@@ -29,6 +29,7 @@ _Leagues / Sports currently supported_
 3. [Running Program](#Running-Program)
    - [GUI Mode](#GUI-Mode)
    - [CLI Mode](#CLI-Mode)
+4. [Pushover](#Pushover)
 
 ## Prerequisites
 In order to properly run this, you will need the following installed on your client machine:
@@ -36,6 +37,7 @@ In order to properly run this, you will need the following installed on your cli
 - `python3`
 - `pip` || `pip3`
 - `venv`
+- `tkinter`
 
 ## Getting Started
 Once you have followed the prerequisites and installed all the needed dependencies, run the following commands:
@@ -84,6 +86,15 @@ options:
   --gui                 Launch the GUI version
 ```
 
+## Pushover
+Additionally, support for the Pushover app is available as well! To get started, create an `.env` file that contains the following:
+
+```
+PUSHOVER_USER_KEY   = ""
+PUSHOVER_API_TOKEN  = ""
+```
+
+Once done, utilize the CLI option to get updates to your mobile device of your favorite teams!
+
 ## 🚧 Coming soon 🚧
-- Support for Pushover app to work with Github Actions
 - Checking statistics for players/teams

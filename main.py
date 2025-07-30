@@ -1,7 +1,43 @@
-from constants import SUPPORTED_LEAGUES
+from constants import SUPPORTED_LEAGUES, PUSHOVER_USER_KEY, PUSHOVER_API_TOKEN
 from gamechecker.game_checker import game_checker
 from gui.gui_app import main as gui_main
 import argparse, os
+import requests
+
+
+def send_pushover_notification(message):
+    """Sends the specified notification via Pushover API"""
+    if not PUSHOVER_USER_KEY or not PUSHOVER_API_TOKEN:
+        print("ERROR! Missing Pushover credentials...")
+        return False
+
+    try:
+        url = "https://api.pushover.net/1/messages.json"
+        data = {
+            "token": PUSHOVER_API_TOKEN,
+            "user": PUSHOVER_USER_KEY,
+            "message": message,
+            "title": "Friday Night Bytes",
+        }
+        
+        response = requests.post(url, data=data)
+        
+        if response.status_code != 200:
+            print(f"Pushover API Error (Status {response.status_code}):")
+            try:
+                error_details = response.json()
+                print(f"  Response: {error_details}")
+                if 'errors' in error_details:
+                    for error in error_details['errors']:
+                        print(f"  Error: {error}")
+            except:
+                print(f"  Raw response: {response.text}")
+            return False
+        
+        return True
+    except Exception as e:
+        print(f"Error sending Pushover message: {str(e)}")
+        return False
 
 def get_preferences(args=None):
     """ Get user preferences for favorite sport and favorite teams. """
@@ -115,7 +151,8 @@ def main(argv=None):
             if "nba_team" in preferences and "lal" in preferences["nba_team"]:
                 print("\nBleed purple and gold 💜💛! Laker Nation, stand up!")
             
-            game_checker(preferences)
+            result = game_checker(preferences)
+            send_pushover_notification(str(result))
         else:
             print("When using CLI mode, both --sport and team flags are required.")
             print("Usage: python main.py --sport <sport_number> --<league>-teams <team_abbreviations>")

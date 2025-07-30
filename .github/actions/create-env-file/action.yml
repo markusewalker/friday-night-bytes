@@ -1,0 +1,17 @@
+---
+name: Create test .env file
+description: "Creates a .env file with required environment variables"
+inputs:
+  user_key:
+    description: "Pushover User Key"
+    required: true
+  token:
+    description: "Pushover API Token"
+    required: true
+runs:
+  using: composite
+  steps:
+    - run: |
+        echo "PUSHOVER_USER_KEY=${{ inputs.user_key }}" > .env
+        echo "PUSHOVER_API_TOKEN=${{ inputs.token }}" >> .env
+      shell: bash
