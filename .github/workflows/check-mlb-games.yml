@@ -1,7 +1,9 @@
 ---
-name: Laker Game Checker
+name: MLB Game Checker
 
 on:
+  schedule:
+    - cron: '0 17 * * 1'
   workflow_dispatch:
 
 env:
@@ -9,7 +11,7 @@ env:
   PUSHOVER_API_TOKEN: ${{ secrets.PUSHOVER_API_TOKEN }}
 
 jobs:
-  check-laker-games:
+  check-mlb-games:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -21,11 +23,11 @@ jobs:
           user_key: ${{ env.PUSHOVER_USER_KEY }}
           token: ${{ env.PUSHOVER_API_TOKEN }}
 
-      - name: Check for Laker games
+      - name: Check for Dodger games
         uses: ./.github/actions/check-sports-games
         with:
-          sport: "1"
-          teams: "lal"
-          off-season-start: "07-01"
-          reg-season-start: "10-21"
-          sport-name: "NBA"
+          sport: "3"
+          teams: "lad"
+          off-season-start: "11-04"
+          reg-season-start: "03-18"
+          sport-name: "MLB"

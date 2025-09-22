@@ -1,13 +1,13 @@
 from datetime import datetime, date, timedelta
-from sportsipy.nba.schedule import Schedule as NBASchedule
-from sportsipy.nfl.schedule import Schedule as NFLSchedule
-from sportsipy.mlb.schedule import Schedule as MLBSchedule
 from constants import SUPPORTED_LEAGUES
 import time
 import requests
 import pytz
 import ssl
-import urllib3
+import json
+import os, sys
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 def get_current_date():
     """Get the current date using Eastern timezone for consistency."""
@@ -31,16 +31,59 @@ def get_team_name_from_abbreviation(abbreviation, league):
     return None
 
 
-def get_schedule_for_league(team_abbr, league):
-    """Get schedule for a team based on the league."""
-    if league == "nba":
-        return NBASchedule(team_abbr.upper())
-    elif league == "nfl":
-        return NFLSchedule(team_abbr.upper())
-    elif league == "mlb":
-        return MLBSchedule(team_abbr.upper())
-    else:
-        raise ValueError(f"Unsupported league: {league}")
+def get_schedule_from_espn(league, team_abbr):
+    """Get schedule from ESPN API for a specific team in any league"""
+    sport_paths = {
+        'nfl': 'football/nfl',
+        'nba': 'basketball/nba', 
+        'mlb': 'baseball/mlb'
+    }
+    
+    sport_path = sport_paths.get(league)
+    if not sport_path:
+        print(f"Unsupported league: {league}")
+        return []
+    
+    try:
+        url = f"https://site.api.espn.com/apis/site/v2/sports/{sport_path}/teams/{team_abbr}/schedule"
+        response = requests.get(url)
+        response.raise_for_status()
+        data = response.json()
+        
+        games = []
+        events = data.get('events', [])
+        
+        for event in events:
+            competitors = event.get('competitions', [{}])[0].get('competitors', [])
+            for competitor in competitors:
+                team_data = competitor.get('team', {})
+
+                if team_data.get('abbreviation', '').upper() == team_abbr.upper():
+                    opponent = None
+                    for comp in competitors:
+                        if comp != competitor:
+                            opponent = comp.get('team', {}).get('abbreviation', 'Unknown')
+                            break
+                    
+                    game_info = {
+                        'date': event.get('date', ''),
+                        'opponent_abbr': opponent,
+                        'location': 'Home' if competitor.get('homeAway') == 'home' else 'Away'
+                    }
+
+                    games.append(game_info)
+                    break
+        
+        return games
+        
+    except requests.exceptions.RequestException as e:
+        print(f"Error fetching {league.upper()} schedule for {team_abbr}: {e}")
+        return []
+
+
+def get_schedule_for_league(league, team_abbr):
+    """Get schedule data for a team in the specified league"""
+    return get_schedule_from_espn(league, team_abbr)
 
 
 def get_date_description(target_date):
@@ -98,21 +141,24 @@ def check_games(favorite_teams, league, target_date):
         try:
             # Put a sleep between requests to avoid rate limiting
             if i > 0:
-                time.sleep(5)
-            schedule = get_schedule_for_league(team_abbr, league)
+                time.sleep(0.5)  # Reduced sleep time since ESPN is more reliable
+            schedule = get_schedule_for_league(league, team_abbr)
             
             team_has_game = False
+            
             for game in schedule:
                 try:
-                    game_date = parse_game_date(game.date, league)
-                    if not game_date:
+                    game_date_str = game.get('date', '')
+                    if game_date_str:
+                        game_date = datetime.fromisoformat(game_date_str.replace('Z', '+00:00')).date()
+                    else:
                         continue
                 except (ValueError, AttributeError):
                     continue
                 
                 if game_date == target_date:
-                    is_home = game.location == 'Home' if hasattr(game, 'location') else None
-                    opponent = game.opponent_abbr if hasattr(game, 'opponent_abbr') else 'Unknown'
+                    is_home = game.get('location') == 'Home'
+                    opponent = game.get('opponent_abbr', 'Unknown')
                     opponent_name = get_team_name_from_abbreviation(opponent, league)
                     
                     game_info = {
@@ -123,7 +169,8 @@ def check_games(favorite_teams, league, target_date):
                         'opponent': opponent_name or opponent,
                         'opponent_abbr': opponent,
                         'is_home': is_home,
-                        'date': game_date.strftime('%Y-%m-%d')
+                        'date': game_date.strftime('%Y-%m-%d'),
+                        'datetime': game.get('date', '')
                     }
                     
                     games_found.append(game_info)
@@ -154,46 +201,39 @@ def check_games(favorite_teams, league, target_date):
     return games_found
 
 
-def check_games_today(favorite_teams, league):
+def check_games_this_week(favorite_teams, league):
     """
-    Check if any of the selected favorite teams have games scheduled for today.
+    Check if any of the selected favorite teams have games scheduled for this week.
 
     Args:
         favorite_teams (list): List of team abbreviations (e.g., ['lal', 'bos'])
         league (str): The league to check (e.g., 'nba', 'nfl', 'mlb') - REQUIRED
     
     Returns:
-        list: List of dictionaries containing game information for today
+        dict: Dictionary with dates as keys and lists of game information as values
     """
-    return check_games(favorite_teams, league, get_current_date())
-
-
-def check_games_tomorrow(favorite_teams, league):
-    """
-    Check if any of the selected favorite teams have games scheduled for tomorrow.
-
-    Args:
-        favorite_teams (list): List of team abbreviations (e.g., ['lal', 'bos'])
-        league (str): The league to check (e.g., 'nba', 'nfl', 'mlb') - REQUIRED
+    weekly_games = {}
+    current_date = get_current_date()
     
-    Returns:
-        list: List of dictionaries containing game information for tomorrow
-    """
-    tomorrow = get_current_date() + timedelta(days=1)
-    return check_games(favorite_teams, league, tomorrow)
+    for day_offset in range(7):
+        target_date = current_date + timedelta(days=day_offset)
+        games_for_date = check_games(favorite_teams, league, target_date)
+
+        if games_for_date:
+            weekly_games[target_date] = games_for_date
+    
+    return weekly_games
 
 
-def display_games(games_list, target_date):
+def display_games(games_list):
     """
-    Display information about games scheduled for a specific date.
+    Display information about games scheduled for your favorite teams.
     
     Args:
         games_list (list): List of game dictionaries
-        target_date (date): The date for which games are being displayed
     """
     if not games_list:
-        date_description = get_date_description(target_date)
-        print(f"\n📅 No games scheduled {date_description} for your favorite teams")
+        print(f"\n📅 No games scheduled for your favorite teams")
         return
     
     games_by_league = {}
@@ -203,8 +243,7 @@ def display_games(games_list, target_date):
             games_by_league[league] = []
         games_by_league[league].append(game)
     
-    date_description = get_date_description(target_date)
-    print(f"\n🏆 Games {date_description.title()} • {target_date.strftime('%B %d, %Y (%A)')}")
+    print(f"\nGames for your favorite teams")
     
     for league, games in games_by_league.items():
         print("─" * 90)
@@ -218,32 +257,27 @@ def display_games(games_list, target_date):
                 venue = "🏠"
             else:
                 matchup = f"{game['team']} @ {game['opponent']}"
-                venue = "✈️"
+                venue = "✈️ "
             
-            print(f"{team:<35} {matchup:<45} {venue}")
+            game_datetime = game.get('datetime', '')
+            if game_datetime and 'T' in game_datetime:
+                try:
+                    dt = datetime.fromisoformat(game_datetime.replace('Z', '+00:00'))
+                    eastern = pytz.timezone('America/New_York')
+                    dt_et = dt.astimezone(eastern)
+
+                    game_date = dt_et.strftime('%m/%d/%Y')
+                    game_time = dt_et.strftime('%I:%M %p EST')
+
+                    date_time_display = f"{game_date} {game_time}"
+                except Exception as e:
+                    date_time_display = game_datetime
+            else:
+                date_time_display = 'TBD'
+                
+            print(f"{team:<35} {matchup:<45} {venue} {date_time_display}")
         
         print()
-
-
-def display_games_today(games_today):
-    """
-    Display information about games scheduled for today.
-    
-    Args:
-        games_today (list): List of game dictionaries
-    """
-    display_games(games_today, get_current_date())
-
-      
-def display_games_tomorrow(games_tomorrow):
-    """
-    Display information about games scheduled for tomorrow.
-    
-    Args:
-        games_tomorrow (list): List of game dictionaries
-    """
-    tomorrow = get_current_date() + timedelta(days=1)
-    display_games(games_tomorrow, tomorrow)
 
 
 def parse_game_date(date_str, league):
@@ -323,19 +357,18 @@ def build_games_summary(games, label):
 
 def game_checker(preferences):
     """
-    Function to check if the selected teams are playing today and tomorrow, and display the games.
+    Function to check if the selected teams are playing this week and display the games.
     
     Args:
         preferences (dict): User preferences containing favorite teams and leagues
 
     Returns:
-        str: Summary of games for today and tomorrow
+        str: Summary of games for this week
     """
     if not preferences:
         return "No preferences provided."
 
-    all_games_today = []
-    all_games_tomorrow = []
+    all_weekly_games = []
     all_games_summary = []
 
     for league_key in SUPPORTED_LEAGUES.keys():
@@ -343,16 +376,13 @@ def game_checker(preferences):
 
         if team_key in preferences and preferences[team_key]:
             favorite_teams = preferences[team_key]
-            games_today = check_games_today(favorite_teams, league_key)
-            games_tomorrow = check_games_tomorrow(favorite_teams, league_key)
-            all_games_today.extend(games_today)
-            all_games_tomorrow.extend(games_tomorrow)
+            weekly_games = check_games_this_week(favorite_teams, league_key)
+            
+            for date, games_for_date in weekly_games.items():
+                all_weekly_games.extend(games_for_date)
 
-    display_games_today(all_games_today)
-    display_games_tomorrow(all_games_tomorrow)
+    display_games(all_weekly_games)
 
-    all_games_summary.append(build_games_summary(all_games_today, "Today's Games:"))
-    all_games_summary.append("")
-    all_games_summary.append(build_games_summary(all_games_tomorrow, "Tomorrow's Games:"))
+    all_games_summary.append(build_games_summary(all_weekly_games, "This Week's Games:"))
 
     return "\n".join(all_games_summary)

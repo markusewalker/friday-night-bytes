@@ -5,11 +5,12 @@
   <img src="assets/logo.png" alt="Friday Night Bytes Logo" width="300">
 </div>
 
-Friday Night Bytes is a **proof of concept** sports game checker that demonstrates automated data collection from sports websites. Utilizing `sportsipy`, this project showcases how to build a game-checking application with robust error handling and timezone management.
+Friday Night Bytes is a **proof of concept** sports game checker that demonstrates automated data collection using the unofficial ESPN API. This is an educational project that showcases how to build a game-checking application with multiple options of checking games.
 
-**⚠️ CI/CD Limitations**: Sports data providers (like sports-reference.com) actively block automated requests from GitHub Actions and other CI environments. This is expected behavior and demonstrates real-world challenges in web scraping.
+## DISCLAIMER
+As previously mentioned, this is a public API provided by ESPN, Additionally, I am not affiliated with ESPN nor am I responsible for any usage of this API. This project is solely for educational purposes. Please use this API responsibly and ensure that you are abiding by ESPN's terms of service.
 
-**✅ Local Usage**: The application works locally, just not with Github Actions.
+**⚠️ Note on Potential CI/CD Limitations**: Sports data providers actively block automated requests from GitHub Actions and other CI environments. This is expected behavior and demonstrates real-world challenges in web scraping.
 
 _Leagues / Sports currently supported_
 - National Basketball Associaton (NBA) :basketball:
@@ -22,25 +23,15 @@ _Leagues / Sports currently supported_
 - **Multi-sport Support**: NBA, NFL, and MLB game tracking
 - **Real-time Data**: Live game schedules and information
 
-
 ## Table of Contents
-1. [Prerequisites](#Prerequisites)
-2. [Getting Started](#Getting-Started)
-3. [Running Program](#Running-Program)
+1. [Getting Started](#Getting-Started)
+2. [Running Program](#Running-Program)
    - [GUI Mode](#GUI-Mode)
    - [CLI Mode](#CLI-Mode)
-4. [Pushover](#Pushover)
-
-## Prerequisites
-In order to properly run this, you will need the following installed on your client machine:
-
-- `python3`
-- `pip` || `pip3`
-- `venv`
-- `tkinter`
+3. [Pushover](#Pushover)
 
 ## Getting Started
-Once you have followed the prerequisites and installed all the needed dependencies, run the following commands:
+To get started, run the following commands in the root of the project:
 
 ```
 python3 -m venv env
@@ -57,7 +48,7 @@ Or run the GUI directly: `python3 gui/gui_app.py`
 
 The GUI provides:
 - **Splash Screen**: Welcome screen with logo
-- **Sport Selection**: Click on basketball 🏀, football 🏈, or baseball ⚾
+- **Sport Selection**: Click on the NFL, NBA or MLB logo
 - **Team Selection**: Browse and select your favorite teams
 - **Game Display**: View upcoming games for your selected teams
 
@@ -95,6 +86,3 @@ PUSHOVER_API_TOKEN  = ""
 ```
 
 Once done, utilize the CLI option to get updates to your mobile device of your favorite teams!
-
-## 🚧 Coming soon 🚧
-- Checking statistics for players/teams

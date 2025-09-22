@@ -1,0 +1,60 @@
+---
+name: NFL Game Checker
+
+on:
+  schedule:
+    - cron: '0 17 * * 1'
+  workflow_dispatch:
+
+env:
+  PUSHOVER_USER_KEY: ${{ secrets.PUSHOVER_USER_KEY }}
+  PUSHOVER_API_TOKEN: ${{ secrets.PUSHOVER_API_TOKEN }}
+
+jobs:
+  check-nfl-games:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Create .env file
+        uses: ./.github/actions/create-env-file
+        with:
+          user_key: ${{ env.PUSHOVER_USER_KEY }}
+          token: ${{ env.PUSHOVER_API_TOKEN }}
+
+      - name: Check for Chiefs games
+        uses: ./.github/actions/check-sports-games
+        with:
+          sport: "2"
+          teams: "kc"
+          off-season-start: "02-15"
+          reg-season-start: "09-01"
+          sport-name: "NFL"
+
+      - name: Check for Ravens games
+        uses: ./.github/actions/check-sports-games
+        with:
+          sport: "2"
+          teams: "bal"
+          off-season-start: "02-15"
+          reg-season-start: "09-01"
+          sport-name: "NFL"
+
+      - name: Check for Eagles games
+        uses: ./.github/actions/check-sports-games
+        with:
+          sport: "2"
+          teams: "phi"
+          off-season-start: "02-15"
+          reg-season-start: "09-01"
+          sport-name: "NFL"
+
+      - name: Check for Rams games
+        uses: ./.github/actions/check-sports-games
+        with:
+          sport: "2"
+          teams: "lar"
+          off-season-start: "02-15"
+          reg-season-start: "09-01"
+          sport-name: "NFL"

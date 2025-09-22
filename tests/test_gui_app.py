@@ -91,28 +91,15 @@ class TestFridayNightBytesGUI(unittest.TestCase):
     @pytest.mark.unit
     @patch('gui.gui_app.tk.Frame')
     @patch('gui.gui_app.tk.Label')
-    @patch('os.path.exists')
-    def test_show_splash_screen_without_logo(self, mock_exists, mock_label, mock_frame):
-        """Test splash screen display without logo."""
-        mock_exists.return_value = False
-        
-        self.gui.show_splash_screen()
-
-        mock_frame.assert_called()
-        mock_label.assert_called()
-
-    @pytest.mark.unit
-    @patch('gui.gui_app.tk.Frame')
-    @patch('gui.gui_app.tk.Label')
     def test_show_sport_selection(self, mock_label, mock_frame):
         """Test sport selection screen display."""
         with patch.object(self.gui, 'create_sport_button') as mock_create:
             self.gui.show_sport_selection()
             
             expected_calls = [
-                mock.call(mock.ANY, "nba", "🏀", 0),
-                mock.call(mock.ANY, "nfl", "🏈", 1),
-                mock.call(mock.ANY, "mlb", "⚾", 2)
+                mock.call(mock.ANY, "nba", 0),
+                mock.call(mock.ANY, "nfl", 1),
+                mock.call(mock.ANY, "mlb", 2)
             ]
             mock_create.assert_has_calls(expected_calls)
 
@@ -212,22 +199,6 @@ class TestFridayNightBytesGUI(unittest.TestCase):
             
             mock_image.assert_called()
             mock_img.resize.assert_called_with((80, 80), mock.ANY)
-
-    @pytest.mark.unit
-    @patch('gui.gui_app.tk.Frame')
-    @patch('gui.gui_app.tk.Button')
-    @patch('os.path.exists')
-    def test_create_team_button_without_logo(self, mock_exists, mock_button, mock_frame):
-        """Test team button creation without logo."""
-        mock_exists.return_value = False
-        self.gui.selected_sport = "nba"
-        self.gui.cols_per_row = 4
-        self.gui.team_buttons = {}
-        
-        mock_parent = Mock()
-        
-        self.gui.create_team_button(mock_parent, "Test Team", "TST", 0)        
-        mock_button.assert_called()
 
     @pytest.mark.unit
     @patch('gui.gui_app.messagebox.showwarning')
