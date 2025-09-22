@@ -1,4 +1,4 @@
-from gamechecker.game_checker import display_games_today, display_games_tomorrow
+from gamechecker.game_checker import display_games
 from datetime import date
 import pytest
 
@@ -31,7 +31,7 @@ def test_game_display_with_nba_game():
     ]
     
     print("=" * 50)
-    display_games_today(mock_games)
+    display_games(mock_games)
     
 
 @pytest.mark.unit
@@ -52,7 +52,7 @@ def test_game_display_with_nfl_game():
     ]
     
     print("=" * 50)
-    display_games_today(mock_games)
+    display_games(mock_games)
     
 
 @pytest.mark.unit
@@ -73,18 +73,11 @@ def test_game_display_with_mlb_game():
     ]
     
     print("=" * 50)
-    display_games_today(mock_games)
+    display_games(mock_games)
 
 
 @pytest.mark.unit
-def test_game_display_no_games_today():
+def test_game_display_no_games():
     """Test the game display functionality with no games."""
     print("=" * 50)
-    display_games_today([])
-    
-
-@pytest.mark.unit
-def test_game_display_no_games_tomorrow():
-    """Test the game display functionality with no games for tomorrow."""
-    print("=" * 50)
-    display_games_tomorrow([])
+    display_games([])

@@ -1,0 +1,69 @@
+---
+name: NBA Game Checker
+
+on:
+  schedule:
+    - cron: '0 17 * * 1'
+  workflow_dispatch:
+
+env:
+  PUSHOVER_USER_KEY: ${{ secrets.PUSHOVER_USER_KEY }}
+  PUSHOVER_API_TOKEN: ${{ secrets.PUSHOVER_API_TOKEN }}
+
+jobs:
+  check-nba-games:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Create .env file
+        uses: ./.github/actions/create-env-file
+        with:
+          user_key: ${{ env.PUSHOVER_USER_KEY }}
+          token: ${{ env.PUSHOVER_API_TOKEN }}
+
+      - name: Check for Laker games
+        uses: ./.github/actions/check-sports-games
+        with:
+          sport: "1"
+          teams: "lal"
+          off-season-start: "07-01"
+          reg-season-start: "10-21"
+          sport-name: "NBA"
+
+      - name: Check for OKC games
+        uses: ./.github/actions/check-sports-games
+        with:
+          sport: "1"
+          teams: "okc"
+          off-season-start: "07-01"
+          reg-season-start: "10-21"
+          sport-name: "NBA"
+
+      - name: Check for Golden State games
+        uses: ./.github/actions/check-sports-games
+        with:
+          sport: "1"
+          teams: "gs"
+          off-season-start: "07-01"
+          reg-season-start: "10-21"
+          sport-name: "NBA"
+
+      - name: Check for Rockets games
+        uses: ./.github/actions/check-sports-games
+        with:
+          sport: "1"
+          teams: "hou"
+          off-season-start: "07-01"
+          reg-season-start: "10-21"
+          sport-name: "NBA"
+
+      - name: Check for Mavericks games
+        uses: ./.github/actions/check-sports-games
+        with:
+          sport: "1"
+          teams: "dal"
+          off-season-start: "07-01"
+          reg-season-start: "10-21"
+          sport-name: "NBA"

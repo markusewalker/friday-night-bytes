@@ -48,40 +48,12 @@ class FridayNightBytesGUI:
         
         logo_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "assets", "logo.png")
 
-        if os.path.exists(logo_path):
-            try:
-                logo_img = Image.open(logo_path)
-                logo_img = logo_img.resize((500, 500), Image.Resampling.LANCZOS)
-                
-                self.logo_photo = ImageTk.PhotoImage(logo_img)
-
-                logo_label = tk.Label(main_frame, image=self.logo_photo, bg="#1a1a2e")
-                logo_label.pack(expand=True)
-            except Exception as e:
-                logo_frame = tk.Frame(main_frame, bg="#16213e", width=400, height=200)
-                logo_frame.pack(expand=True)
-                logo_frame.pack_propagate(False)
-                logo_text = tk.Label(
-                    logo_frame,
-                    text="FRIDAY NIGHT BYTES🏀🏈⚾",
-                    font=("Helvetica", 15, "bold"),
-                    fg="#eee2dc",
-                    bg="#16213e",
-                )
-                logo_text.pack(expand=True)
-        else:
-            logo_frame = tk.Frame(main_frame, bg="#16213e", width=400, height=200)
-            logo_frame.pack(expand=True)
-            logo_frame.pack_propagate(False)
-
-            logo_text = tk.Label(
-                logo_frame,
-                text="FRIDAY NIGHT BYTES🏀🏈⚾",
-                font=("Helvetica", 15, "bold"),
-                fg="#eee2dc",
-                bg="#16213e",
-            )
-            logo_text.pack(expand=True)
+        logo_img = Image.open(logo_path)
+        logo_img = logo_img.resize((500, 500), Image.Resampling.LANCZOS)
+            
+        self.logo_photo = ImageTk.PhotoImage(logo_img)
+        logo_label = tk.Label(main_frame, image=self.logo_photo, bg="#1a1a2e")
+        logo_label.pack(expand=True)
 
         self.root.after(5000, self.show_sport_selection)
 
@@ -104,13 +76,13 @@ class FridayNightBytesGUI:
         
         sports_frame = tk.Frame(main_frame, bg="#1a1a2e")
         sports_frame.pack(expand=True)
-        
-        self.create_sport_button(sports_frame, "nba", "🏀", 0)
-        self.create_sport_button(sports_frame, "nfl", "🏈", 1)
-        self.create_sport_button(sports_frame, "mlb", "⚾", 2)
+
+        self.create_sport_button(sports_frame, "nba", 0)
+        self.create_sport_button(sports_frame, "nfl", 1)
+        self.create_sport_button(sports_frame, "mlb", 2)
 
 
-    def create_sport_button(self, parent, sport_key, emoji, row):
+    def create_sport_button(self, parent, sport_key, row):
         """Create a clickable sport button."""
         sport_frame = tk.Frame(parent, bg="#16213e")
         sport_frame.grid(row=row//3, column=row%3, padx=20, pady=20, sticky="nsew")
@@ -122,42 +94,21 @@ class FridayNightBytesGUI:
         
         logo_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "assets", f"{sport_key}-logo.png")
         
-        if os.path.exists(logo_path):
-            try:
-                logo_img = Image.open(logo_path)
-                logo_img = logo_img.resize((250, 250), Image.Resampling.LANCZOS)
-                sport_logo = ImageTk.PhotoImage(logo_img)
+        logo_img = Image.open(logo_path)
+        logo_img = logo_img.resize((250, 250), Image.Resampling.LANCZOS)
+        sport_logo = ImageTk.PhotoImage(logo_img)
                 
-                logo_label = tk.Label(
-                    sport_frame,
-                    image=sport_logo,
-                    bg="#16213e",
-                    cursor="hand2"
-                )
+        logo_label = tk.Label(
+            sport_frame,
+            image=sport_logo,
+            bg="#16213e",
+            cursor="hand2"
+        )
                 
-                if not hasattr(self, 'sport_logos'):
-                    self.sport_logos = {}
+        if not hasattr(self, 'sport_logos'):
+            self.sport_logos = {}
 
-                self.sport_logos[sport_key] = sport_logo
-                
-            except Exception as e:
-                logo_label = tk.Label(
-                    sport_frame,
-                    text=emoji,
-                    font=("Helvetica", 120),
-                    bg="#16213e",
-                    fg="#eee2dc",
-                    cursor="hand2"
-                )
-        else:
-            logo_label = tk.Label(
-                sport_frame,
-                text=emoji,
-                font=("Helvetica", 120),
-                bg="#16213e",
-                fg="#eee2dc",
-                cursor="hand2"
-            )
+        self.sport_logos[sport_key] = sport_logo
         
         logo_label.pack(expand=True)
         logo_label.bind("<Button-1>", lambda e: self.select_sport(sport_key))
@@ -213,7 +164,7 @@ class FridayNightBytesGUI:
         
         back_btn = tk.Button(
             header_frame,
-            text="← Back",
+            text="Back",
             font=("Helvetica", 12),
             bg="#16213e",
             fg="#eee2dc",
@@ -245,7 +196,7 @@ class FridayNightBytesGUI:
             text=f"Select Your Favorite Team(s)!",
             font=("Helvetica", 20, "bold"),
             fg="#eee2dc",
-            bg="#1a1a2e"
+            bg="#1a1a2e",
         )
         title_label.pack(side="left", padx=(50, 0))
         
@@ -351,66 +302,31 @@ class FridayNightBytesGUI:
         logo_path = None
         for filename in possible_filenames:
             potential_path = os.path.join(base_path, filename)
+
             if os.path.exists(potential_path):
                 logo_path = potential_path
                 break
         
-        if logo_path:
-            try:
-                logo_size = 80
-                    
-                logo_img = Image.open(logo_path)
-                logo_img = logo_img.resize((logo_size, logo_size), Image.Resampling.LANCZOS)
-                team_logo = ImageTk.PhotoImage(logo_img)
-                
-                team_btn = tk.Button(
-                    team_frame,
-                    image=team_logo,
-                    bg="#ffffff",
-                    activebackground="#ac9c7c",
-                    border=0,
-                    padx=15,
-                    pady=15,
-                    command=lambda abbr=team_abbr: self.toggle_team(abbr)
-                )
-                
-                if not hasattr(self, 'team_logos'):
-                    self.team_logos = {}
+        logo_size = 80
+        logo_img = Image.open(logo_path)
+        logo_img = logo_img.resize((logo_size, logo_size), Image.Resampling.LANCZOS)
+        team_logo = ImageTk.PhotoImage(logo_img)
+            
+        team_btn = tk.Button(
+            team_frame,
+            image=team_logo,
+            bg="#ffffff",
+            activebackground="#ac9c7c",
+            border=0,
+            padx=15,
+            pady=15,
+            command=lambda abbr=team_abbr: self.toggle_team(abbr)
+        )
+            
+        if not hasattr(self, 'team_logos'):
+            self.team_logos = {}
 
-                self.team_logos[team_abbr] = team_logo
-                
-            except Exception as e:
-                team_btn = tk.Button(
-                    team_frame,
-                    text=f"{team_name}\n({team_abbr})",
-                    font=("Helvetica", 10),
-                    bg="#ffffff",
-                    fg="#1a1a2e",
-                    activebackground="#ac9c7c",
-                    activeforeground="#1a1a2e",
-                    border=0,
-                    padx=10,
-                    pady=10,
-                    wraplength=150,
-                    justify="center",
-                    command=lambda abbr=team_abbr: self.toggle_team(abbr)
-                )
-        else:
-            team_btn = tk.Button(
-                team_frame,
-                text=f"{team_name}\n({team_abbr})",
-                font=("Helvetica", 10),
-                bg="#ffffff",
-                fg="#1a1a2e",
-                activebackground="#ac9c7c",
-                activeforeground="#1a1a2e",
-                border=0,
-                padx=10,
-                pady=10,
-                wraplength=150,
-                justify="center",
-                command=lambda abbr=team_abbr: self.toggle_team(abbr)
-            )
+        self.team_logos[team_abbr] = team_logo
         
         team_btn.pack(fill="both", expand=True)
         self.team_buttons[team_abbr] = team_btn
@@ -506,7 +422,7 @@ class FridayNightBytesGUI:
         
         back_btn = tk.Button(
             header_frame,
-            text="← Back to Teams",
+            text="Back",
             font=("Helvetica", 12),
             bg="#16213e",
             fg="#eee2dc",

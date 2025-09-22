@@ -128,7 +128,7 @@ def main(argv=None):
             return
         except ImportError as e:
             print(f"GUI mode is not available: {e}")
-            print("Please ensure tkinter and Pillow are installed.")
+            print("Please ensure the required libraries are installed. See README for details.")
             return
 
     using_cli = args.sport or args.nba_teams or args.nfl_teams or args.mlb_teams

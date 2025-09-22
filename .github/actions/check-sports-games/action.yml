@@ -105,18 +105,10 @@ runs:
         
         output=$(python3 main.py --sport ${{ inputs.sport }} $team_flag ${{ inputs.teams }})
         echo "$output"
-        
-        if echo "$output" | grep -q "✅ Game Found!"; then
-          echo "games_found=true" >> $GITHUB_OUTPUT
-          echo "🎉 Games found for ${{ inputs.sport-name }} teams!"
-        else
-          echo "games_found=false" >> $GITHUB_OUTPUT
-          echo "📅 No games found for ${{ inputs.sport-name }} teams today or tomorrow"
-        fi
 
     - name: Skip workflow (off-season)
       if: steps.season-check.outputs.season_active == 'false'
       shell: bash
       run: |
-        echo "⏸️ Skipping ${{ inputs.sport-name }} game check - currently in off-season"
+        echo "Skipping ${{ inputs.sport-name }} game check - currently in off-season"
         echo "Off-season period: ${{ inputs.off-season-start }} to ${{ inputs.reg-season-start }}"
