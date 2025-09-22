@@ -247,7 +247,7 @@ def display_games(games_list):
     
     for league, games in games_by_league.items():
         print("─" * 90)
-        print(f"{'Team':<35} {'Matchup':<45} {'Venue'}")
+        print(f"{'Team':<35} {'Matchup':<45} {'Date/Time':<20}")
         print("─" * 90)
         
         for game in games:
@@ -260,24 +260,37 @@ def display_games(games_list):
                 venue = "✈️ "
             
             game_datetime = game.get('datetime', '')
-            if game_datetime and 'T' in game_datetime:
-                try:
-                    dt = datetime.fromisoformat(game_datetime.replace('Z', '+00:00'))
-                    eastern = pytz.timezone('America/New_York')
-                    dt_et = dt.astimezone(eastern)
-
-                    game_date = dt_et.strftime('%m/%d/%Y')
-                    game_time = dt_et.strftime('%I:%M %p EST')
-
-                    date_time_display = f"{game_date} {game_time}"
-                except Exception as e:
-                    date_time_display = game_datetime
-            else:
-                date_time_display = 'TBD'
+            date_time_display = format_game_datetime(game_datetime)
                 
             print(f"{team:<35} {matchup:<45} {venue} {date_time_display}")
         
         print()
+
+
+def format_game_datetime(game_datetime):
+    """
+    Helper function to format game datetime consistently for display.
+    
+    Args:
+        game_datetime (str): The datetime string from the game
+        
+    Returns:
+        str: Formatted date and time string or 'TBD' if parsing fails
+    """
+    if game_datetime and 'T' in game_datetime:
+        try:
+            dt = datetime.fromisoformat(game_datetime.replace('Z', '+00:00'))
+            eastern = pytz.timezone('America/New_York')
+            dt_et = dt.astimezone(eastern)
+
+            game_date = dt_et.strftime('%m/%d/%Y')
+            game_time = dt_et.strftime('%I:%M %p EST')
+
+            return f"{game_date} {game_time}"
+        except Exception as e:
+            return game_datetime
+    else:
+        return 'TBD'
 
 
 def parse_game_date(date_str, league):
@@ -341,14 +354,17 @@ def build_games_summary(games, label):
 
     if games:
         for game in games:
-            venue = "Home"
-
-            if game.get('is_home'):
+            if game['is_home']:
+                matchup = f"{game['team']} vs {game['opponent']}"
                 venue = "🏠"
             else:
+                matchup = f"{game['team']} @ {game['opponent']}"
                 venue = "✈️"
+            
+            game_datetime = game.get('datetime', '')
+            date_time_display = format_game_datetime(game_datetime)
 
-            lines.append(f"🏆{game['team']} vs {game['opponent']} {venue}")
+            lines.append(f"{matchup} {venue} {date_time_display}")
     else:
         lines.append(f"No games scheduled.")
 
