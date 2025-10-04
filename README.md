@@ -1,21 +1,26 @@
 # Friday Night Bytes
-"__X's and O's, with no syntax woes!__"
+
+| MLB Game Checker | NBA Game Checker | NFL Game Checker | Tests |
+|:----------------:|:----------------:|:----------------:|:-----:|
+| [![MLB](https://github.com/markusewalker/friday-night-bytes/actions/workflows/check-mlb-games.yml/badge.svg?branch=main)](https://github.com/markusewalker/friday-night-bytes/actions/workflows/check-mlb-games.yml) | [![NBA](https://github.com/markusewalker/friday-night-bytes/actions/workflows/check-nba-games.yml/badge.svg?branch=main)](https://github.com/markusewalker/friday-night-bytes/actions/workflows/check-nba-games.yml) | [![NFL](https://github.com/markusewalker/friday-night-bytes/actions/workflows/check-nfl-games.yml/badge.svg?branch=main)](https://github.com/markusewalker/friday-night-bytes/actions/workflows/check-nfl-games.yml) | [![Tests](https://github.com/markusewalker/friday-night-bytes/actions/workflows/run-tests.yml/badge.svg?branch=main)](https://github.com/markusewalker/friday-night-bytes/actions/workflows/run-tests.yml) |
 
 <div align="center">
   <img src="assets/logo.png" alt="Friday Night Bytes Logo" width="300">
 </div>
 
-Friday Night Bytes is a **proof of concept** sports game checker that demonstrates automated data collection using the unofficial ESPN API. This is an educational project that showcases how to build a game-checking application with multiple options of checking games.
+"__X's and O's, with no syntax woes!__"
+
+Friday Night Bytes is a sports game checker that demonstrates automated data collection using the unofficial ESPN API. This is an educational project that showcases how to build a game-checking application with multiple options of checking games.
 
 ## DISCLAIMER
 As previously mentioned, this is a public API provided by ESPN, Additionally, I am not affiliated with ESPN nor am I responsible for any usage of this API. This project is solely for educational purposes. Please use this API responsibly and ensure that you are abiding by ESPN's terms of service.
 
-**⚠️ Note on Potential CI/CD Limitations**: Sports data providers actively block automated requests from GitHub Actions and other CI environments. This is expected behavior and demonstrates real-world challenges in web scraping.
+**Note on Potential CI/CD Limitations**: Sports data providers actively block automated requests from GitHub Actions and other CI environments. This is expected behavior and demonstrates real-world challenges in web scraping.
 
 _Leagues / Sports currently supported_
-- National Basketball Associaton (NBA) :basketball:
-- National Footbal League (NFL) :football:
-- Major League Baseball :baseball:
+- National Basketball Associaton (NBA)
+- National Footbal League (NFL)
+- Major League Baseball
 
 ## Features
 - **Interactive CLI**: Command-line interface for quick team and game checking
