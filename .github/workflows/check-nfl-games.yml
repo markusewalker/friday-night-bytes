@@ -32,15 +32,6 @@ jobs:
           reg-season-start: "09-01"
           sport-name: "NFL"
 
-      - name: Check for Ravens games
-        uses: ./.github/actions/check-sports-games
-        with:
-          sport: "2"
-          teams: "bal"
-          off-season-start: "02-15"
-          reg-season-start: "09-01"
-          sport-name: "NFL"
-
       - name: Check for Eagles games
         uses: ./.github/actions/check-sports-games
         with:
