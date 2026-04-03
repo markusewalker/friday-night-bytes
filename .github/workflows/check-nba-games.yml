@@ -41,29 +41,20 @@ jobs:
           reg-season-start: "10-21"
           sport-name: "NBA"
 
-      - name: Check for Golden State games
+      - name: Check for Boston games
         uses: ./.github/actions/check-sports-games
         with:
           sport: "1"
-          teams: "gs"
+          teams: "bos"
           off-season-start: "07-01"
           reg-season-start: "10-21"
           sport-name: "NBA"
 
-      - name: Check for Rockets games
+      - name: Check for Spurs games
         uses: ./.github/actions/check-sports-games
         with:
           sport: "1"
-          teams: "hou"
-          off-season-start: "07-01"
-          reg-season-start: "10-21"
-          sport-name: "NBA"
-
-      - name: Check for Mavericks games
-        uses: ./.github/actions/check-sports-games
-        with:
-          sport: "1"
-          teams: "dal"
+          teams: "sas"
           off-season-start: "07-01"
           reg-season-start: "10-21"
           sport-name: "NBA"
