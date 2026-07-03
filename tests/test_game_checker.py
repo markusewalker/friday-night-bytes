@@ -2,7 +2,6 @@ from gamechecker.game_checker import display_games
 from datetime import date
 import pytest
 
-
 @pytest.mark.unit
 def test_game_display_with_nba_game():
     """Test the game display functionality with a mock game."""
