@@ -198,7 +198,7 @@ class TestFridayNightBytesGUI(unittest.TestCase):
             self.gui.create_team_button(mock_parent, "Test Team", "TST", 0)
             
             mock_image.assert_called()
-            mock_img.resize.assert_called_with((80, 80), mock.ANY)
+            mock_img.resize.assert_called_with((88, 88), mock.ANY)
 
     @pytest.mark.unit
     @patch('gui.gui_app.messagebox.showwarning')
@@ -261,18 +261,16 @@ class TestFridayNightBytesGUI(unittest.TestCase):
     @patch('gui.gui_app.tk.Frame')
     @patch('gui.gui_app.tk.Button')
     @patch('gui.gui_app.tk.Label')
-    @patch('gui.gui_app.tk.Text')
+    @patch('gui.gui_app.tk.Canvas')
     @patch('gui.gui_app.ttk.Scrollbar')
-    def test_show_games_result(self, mock_scrollbar, mock_text, mock_label, mock_button, mock_frame):
+    @patch.object(FridayNightBytesGUI, '_create_game_card')
+    def test_show_games_result(self, mock_create_card, mock_scrollbar, mock_canvas, mock_label, mock_button, mock_frame):
         """Test games result display."""
-        test_output = "Test game output"
+        test_output = "Lakers                Lakers vs Celtics            🏠 07/04/2026 08:00 PM EST"
         
         self.gui.show_games_result(test_output)
-        mock_text.assert_called()
-        
-        text_instance = mock_text.return_value
-        text_instance.insert.assert_called_with("1.0", test_output)
-        text_instance.config.assert_called_with(state="disabled")
+        mock_canvas.assert_called()
+        mock_create_card.assert_called_once()
 
     @pytest.mark.unit
     def test_run(self):

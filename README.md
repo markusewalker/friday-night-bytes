@@ -57,6 +57,7 @@ The GUI provides:
 - **Team Selection**: Browse and select your favorite teams
 - **Game Display**: View upcoming games for your selected teams
 
+
 ### CLI Mode
 ```
 python3 main.py
